@@ -23,6 +23,10 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
     };
     document.addEventListener("keydown", handleEsc);
 
+<<<<<<< HEAD
+=======
+    // Bloquear scroll preservando posición (iOS Safari friendly)
+>>>>>>> a60c3800d7773176b909b3897d182e0f93571f39
     const scrollY = window.scrollY;
     document.body.style.position = "fixed";
     document.body.style.top = `-${scrollY}px`;
@@ -43,7 +47,11 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
 
   const contenido = (
     <>
+<<<<<<< HEAD
       {/* Backdrop con blur */}
+=======
+      {/* Backdrop */}
+>>>>>>> a60c3800d7773176b909b3897d182e0f93571f39
       <div
         onClick={onClose}
         style={{
@@ -60,7 +68,11 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
         }}
       />
 
+<<<<<<< HEAD
       {/* Modal */}
+=======
+      {/* Modal — centrado en viewport */}
+>>>>>>> a60c3800d7773176b909b3897d182e0f93571f39
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
@@ -171,5 +183,9 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
     </>
   );
 
+<<<<<<< HEAD
+=======
+  // Renderiza directamente en document.body — fuera del árbol de <main>
+>>>>>>> a60c3800d7773176b909b3897d182e0f93571f39
   return createPortal(contenido, document.body);
 }
