@@ -19,7 +19,7 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
     };
     document.addEventListener("keydown", handleEsc);
 
-    // Bloquear scroll preservando posición (hack para iOS Safari)
+    // Bloquear scroll preservando posición (técnica para iOS Safari)
     const scrollY = window.scrollY;
     document.body.style.position = "fixed";
     document.body.style.top = `-${scrollY}px`;
@@ -38,7 +38,7 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
 
   return (
     <>
-      {/* Backdrop — fixed full screen */}
+      {/* Backdrop — full screen oscuro */}
       <div
         onClick={onClose}
         style={{
@@ -52,7 +52,7 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
         }}
       />
 
-      {/* Modal — centered with explicit fixed positioning */}
+      {/* Modal — centrado con coordenadas explícitas */}
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
@@ -62,7 +62,6 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
           transform: "translate(-50%, -50%)",
           width: "calc(100% - 2rem)",
           maxWidth: "32rem",
-          maxHeight: "calc(100vh - 4rem)",
           maxHeight: "calc(100dvh - 4rem)",
           overflowY: "auto",
           zIndex: 9999,
