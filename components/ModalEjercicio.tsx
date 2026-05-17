@@ -18,31 +18,58 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
       if (e.key === "Escape") onClose();
     };
     document.addEventListener("keydown", handleEsc);
-    document.body.style.overflow = "hidden";
+
+    // Bloquear scroll preservando posición (hack para iOS Safari)
+    const scrollY = window.scrollY;
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
+
     return () => {
       document.removeEventListener("keydown", handleEsc);
-      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      window.scrollTo(0, scrollY);
     };
   }, [onClose]);
 
   const Diagrama = info?.diagrama ? DIAGRAMAS[info.diagrama] : null;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      onClick={onClose}
-      style={{
-        paddingTop: "max(1rem, env(safe-area-inset-top))",
-        paddingBottom: "max(1rem, env(safe-area-inset-bottom))",
-      }}
-    >
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-ink/50" />
-
-      {/* Sheet — centrado, con scroll interno */}
+    <>
+      {/* Backdrop — fixed full screen */}
       <div
-        className="relative bg-paper w-full max-w-lg max-h-full overflow-y-auto border border-ink shadow-2xl"
+        onClick={onClose}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(26, 24, 20, 0.5)",
+          zIndex: 9998,
+        }}
+      />
+
+      {/* Modal — centered with explicit fixed positioning */}
+      <div
         onClick={(e) => e.stopPropagation()}
+        style={{
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "calc(100% - 2rem)",
+          maxWidth: "32rem",
+          maxHeight: "calc(100vh - 4rem)",
+          maxHeight: "calc(100dvh - 4rem)",
+          overflowY: "auto",
+          zIndex: 9999,
+          backgroundColor: "#f5f1e8",
+          border: "1px solid #1a1814",
+          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+        }}
       >
         <div className="px-5 py-5 md:px-6 md:py-6">
           <header className="flex items-start justify-between mb-1 pb-4 border-b border-line">
@@ -123,6 +150,6 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 }
