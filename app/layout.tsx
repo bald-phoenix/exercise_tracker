@@ -2,7 +2,7 @@ import "./globals.css";
 import type { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
-  title: "Rutina · Tracker",
+  title: "Exercise Tracker",
   description: "Bitácora diaria de entrenamiento",
   manifest: "/manifest.json",
   icons: {
@@ -17,12 +17,12 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Rutina",
+    title: "Exercise",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f5f1e8",
+  themeColor: "#f7f3ea",
 };
 
 export default function RootLayout({

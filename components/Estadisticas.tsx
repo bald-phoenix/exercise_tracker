@@ -24,11 +24,10 @@ type Props = {
 };
 
 export default function Estadisticas({ registro }: Props) {
-  // Últimas 4 semanas: % cumplimiento promedio
   const semanas = useMemo(() => {
     const hoy = new Date();
     const lunesActual = lunesDeSemana(hoy);
-    const data: { semana: string; pct: number }[] = [];
+    const data: { semana: string; pct: number; esActual: boolean }[] = [];
 
     for (let s = 3; s >= 0; s--) {
       const lunes = new Date(lunesActual);
@@ -54,12 +53,12 @@ export default function Estadisticas({ registro }: Props) {
       data.push({
         semana: `${dia} ${mes}`,
         pct: cuenta > 0 ? Math.round(suma / cuenta) : 0,
+        esActual: s === 0,
       });
     }
     return data;
   }, [registro]);
 
-  // % por día de la semana — para ver qué día se cumple más / menos
   const porDiaSemana = useMemo(() => {
     const totales: { [k: number]: { suma: number; cuenta: number } } = {};
     for (let d = 1; d <= 5; d++) totales[d] = { suma: 0, cuenta: 0 };
@@ -85,7 +84,6 @@ export default function Estadisticas({ registro }: Props) {
     });
   }, [registro]);
 
-  // Total de sesiones completadas (≥80%)
   const sesionesCompletas = useMemo(() => {
     return Object.entries(registro).filter(([fecha, eje]) => {
       const d = new Date(fecha + "T00:00:00");
@@ -97,7 +95,6 @@ export default function Estadisticas({ registro }: Props) {
     }).length;
   }, [registro]);
 
-  // Total de checks individuales
   const totalChecks = useMemo(() => {
     let n = 0;
     Object.values(registro).forEach((d) => {
@@ -107,121 +104,179 @@ export default function Estadisticas({ registro }: Props) {
   }, [registro]);
 
   return (
-    <div className="space-y-10">
-      {/* KPIs */}
-      <div className="grid grid-cols-2 gap-px bg-line">
-        <div className="bg-paper p-5">
-          <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-muted mb-2">
-            Sesiones completas
-          </p>
-          <p className="font-display text-4xl font-medium">
-            {sesionesCompletas}
-          </p>
-          <p className="font-mono text-[10px] text-muted mt-1">
-            ≥ 80% del día
-          </p>
-        </div>
-        <div className="bg-paper p-5">
-          <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-muted mb-2">
-            Ejercicios totales
-          </p>
-          <p className="font-display text-4xl font-medium">{totalChecks}</p>
-          <p className="font-mono text-[10px] text-muted mt-1">marcados</p>
-        </div>
+    <div className="space-y-4">
+      {/* KPIs en cards individuales */}
+      <div className="grid grid-cols-2 gap-3">
+        <KpiCard
+          label="Sesiones"
+          value={sesionesCompletas}
+          subtitle="completas (≥80%)"
+        />
+        <KpiCard
+          label="Ejercicios"
+          value={totalChecks}
+          subtitle="marcados en total"
+        />
       </div>
 
       {/* Cumplimiento últimas 4 semanas */}
-      <div>
-        <div className="flex items-baseline justify-between border-b border-line pb-3 mb-4">
-          <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-muted">
-            Cumplimiento · últimas 4 semanas
-          </p>
-        </div>
-        <div className="h-48">
+      <div className="bg-paper border border-line-soft rounded-2xl p-5 shadow-soft">
+        <header className="flex items-baseline justify-between mb-4">
+          <div>
+            <p className="font-mono text-label uppercase text-ink-light mb-0.5">
+              Cumplimiento
+            </p>
+            <p className="font-display text-title text-ink">Últimas 4 semanas</p>
+          </div>
+        </header>
+        <div className="h-44 -mx-2">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={semanas}>
+            <BarChart data={semanas} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
               <XAxis
                 dataKey="semana"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#6b6357", fontSize: 10, fontFamily: "JetBrains Mono" }}
+                tick={{
+                  fill: "#6b6357",
+                  fontSize: 10,
+                  fontFamily: "JetBrains Mono",
+                }}
               />
               <YAxis
                 domain={[0, 100]}
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#6b6357", fontSize: 10, fontFamily: "JetBrains Mono" }}
-                tickFormatter={(v) => `${v}%`}
+                tick={{
+                  fill: "#9a9085",
+                  fontSize: 9,
+                  fontFamily: "JetBrains Mono",
+                }}
+                tickFormatter={(v) => `${v}`}
+                ticks={[0, 50, 100]}
+                width={24}
               />
               <Tooltip
-                cursor={{ fill: "rgba(200,75,49,0.06)" }}
+                cursor={{ fill: "rgba(184, 73, 44, 0.06)" }}
                 contentStyle={{
-                  background: "#1a1814",
+                  background: "#161310",
                   border: "none",
-                  fontFamily: "JetBrains Mono",
-                  fontSize: 11,
-                  color: "#f5f1e8",
+                  borderRadius: "8px",
+                  fontFamily: "Inter",
+                  fontSize: 12,
+                  fontWeight: 500,
+                  padding: "6px 10px",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
                 }}
-                labelStyle={{ color: "#f5f1e8" }}
+                labelStyle={{ color: "#9a9085", fontSize: 10, marginBottom: 2 }}
+                itemStyle={{ color: "#f7f3ea", padding: 0 }}
                 formatter={(v: number) => [`${v}%`, "Cumplimiento"]}
               />
-              <Bar dataKey="pct" fill="#c84b31" radius={[2, 2, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* % por día de la semana */}
-      <div>
-        <div className="flex items-baseline justify-between border-b border-line pb-3 mb-4">
-          <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-muted">
-            Promedio por día de la semana
-          </p>
-        </div>
-        <div className="h-48">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={porDiaSemana}>
-              <XAxis
-                dataKey="dia"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: "#6b6357", fontSize: 10, fontFamily: "JetBrains Mono" }}
-              />
-              <YAxis
-                domain={[0, 100]}
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: "#6b6357", fontSize: 10, fontFamily: "JetBrains Mono" }}
-                tickFormatter={(v) => `${v}%`}
-              />
-              <Tooltip
-                cursor={{ fill: "rgba(26,24,20,0.04)" }}
-                contentStyle={{
-                  background: "#1a1814",
-                  border: "none",
-                  fontFamily: "JetBrains Mono",
-                  fontSize: 11,
-                  color: "#f5f1e8",
-                }}
-                labelStyle={{ color: "#f5f1e8" }}
-                formatter={(v: number) => [`${v}%`, "Promedio"]}
-              />
-              <Bar dataKey="pct" radius={[2, 2, 0, 0]}>
-                {porDiaSemana.map((entry, idx) => (
+              <Bar dataKey="pct" radius={[6, 6, 0, 0]}>
+                {semanas.map((entry, idx) => (
                   <Cell
                     key={idx}
-                    fill={entry.pct >= 80 ? "#c84b31" : entry.pct >= 50 ? "#1a1814" : "#6b6357"}
+                    fill={entry.esActual ? "#b8492c" : "#d8cdb8"}
                   />
                 ))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <p className="font-mono text-[10px] text-muted mt-3">
-          Días con menor cumplimiento aparecen más claros — revisa si hay
-          patrón.
+      </div>
+
+      {/* % por día de la semana */}
+      <div className="bg-paper border border-line-soft rounded-2xl p-5 shadow-soft">
+        <header className="flex items-baseline justify-between mb-4">
+          <div>
+            <p className="font-mono text-label uppercase text-ink-light mb-0.5">
+              Promedio
+            </p>
+            <p className="font-display text-title text-ink">Por día de la semana</p>
+          </div>
+        </header>
+        <div className="h-44 -mx-2">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={porDiaSemana} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+              <XAxis
+                dataKey="dia"
+                axisLine={false}
+                tickLine={false}
+                tick={{
+                  fill: "#6b6357",
+                  fontSize: 10,
+                  fontFamily: "JetBrains Mono",
+                }}
+              />
+              <YAxis
+                domain={[0, 100]}
+                axisLine={false}
+                tickLine={false}
+                tick={{
+                  fill: "#9a9085",
+                  fontSize: 9,
+                  fontFamily: "JetBrains Mono",
+                }}
+                ticks={[0, 50, 100]}
+                width={24}
+              />
+              <Tooltip
+                cursor={{ fill: "rgba(22, 19, 16, 0.04)" }}
+                contentStyle={{
+                  background: "#161310",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontFamily: "Inter",
+                  fontSize: 12,
+                  fontWeight: 500,
+                  padding: "6px 10px",
+                }}
+                labelStyle={{ color: "#9a9085", fontSize: 10, marginBottom: 2 }}
+                itemStyle={{ color: "#f7f3ea", padding: 0 }}
+                formatter={(v: number) => [`${v}%`, "Promedio"]}
+              />
+              <Bar dataKey="pct" radius={[6, 6, 0, 0]}>
+                {porDiaSemana.map((entry, idx) => (
+                  <Cell
+                    key={idx}
+                    fill={
+                      entry.pct >= 80
+                        ? "#b8492c"
+                        : entry.pct >= 50
+                        ? "#3d362e"
+                        : "#d8cdb8"
+                    }
+                  />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+        <p className="font-mono text-[10px] text-ink-light mt-3 leading-relaxed">
+          Días claros = menor cumplimiento. Revisa si hay un patrón.
         </p>
       </div>
+    </div>
+  );
+}
+
+function KpiCard({
+  label,
+  value,
+  subtitle,
+}: {
+  label: string;
+  value: number;
+  subtitle: string;
+}) {
+  return (
+    <div className="bg-paper border border-line-soft rounded-2xl p-4 shadow-soft">
+      <p className="font-mono text-label uppercase text-ink-light mb-2">
+        {label}
+      </p>
+      <p className="font-display text-display-lg text-ink leading-none">
+        {value}
+      </p>
+      <p className="text-[11px] text-ink-muted mt-1.5">{subtitle}</p>
     </div>
   );
 }

@@ -22,114 +22,161 @@ export default function DiaCard({
   esHoy,
   compacto,
 }: Props) {
-  const [modal, setModal] = useState<{ nombre: string; detalle: string } | null>(null);
+  const [modal, setModal] = useState<{ nombre: string; detalle: string } | null>(
+    null
+  );
 
   const total = dia.ejercicios.length;
   const completados = Object.values(registro).filter(Boolean).length;
   const pct = porcentaje ?? Math.round((completados / total) * 100);
+  const completo = pct === 100;
 
   return (
     <>
       <article
-        className={`relative border ${
-          esHoy ? "border-ink" : "border-line"
-        } bg-cream/40 p-6 md:p-8 ${compacto ? "" : "shadow-sm"}`}
+        className={`relative bg-paper border rounded-2xl overflow-hidden transition-all duration-300 ${
+          esHoy
+            ? "border-ink/15 shadow-card"
+            : "border-line-soft shadow-soft"
+        } ${completo ? "bg-paper-soft" : ""}`}
       >
-        {esHoy && (
-          <div className="absolute -top-3 left-6 bg-ink text-paper px-3 py-1 font-mono text-[9px] tracking-[0.2em] uppercase">
-            Hoy
-          </div>
-        )}
+        {/* Header */}
+        <header className="px-5 pt-5 pb-4">
+          <div className="flex items-start justify-between gap-4 mb-3">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                {esHoy && (
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-accent/10 rounded-md">
+                    <span className="w-1 h-1 rounded-full bg-accent" />
+                    <span className="font-mono text-[9px] tracking-wider uppercase text-accent font-semibold">
+                      Hoy
+                    </span>
+                  </span>
+                )}
+                <p className="font-mono text-label uppercase text-ink-light truncate">
+                  {dia.enfoque}
+                </p>
+              </div>
+              <h2 className="font-display text-display text-ink">
+                {dia.titulo}
+              </h2>
+            </div>
 
-        <header className="flex items-baseline justify-between mb-5 pb-3 border-b border-line">
-          <div>
-            <h2 className="font-display text-2xl md:text-3xl font-medium leading-tight">
-              {dia.titulo}
-            </h2>
-            <p className="font-mono text-[10px] tracking-[0.15em] uppercase text-muted mt-1">
-              {dia.enfoque}
-            </p>
+            <div className="text-right shrink-0">
+              <div className="flex items-baseline gap-1">
+                <span className="font-display text-2xl text-ink">
+                  {completados}
+                </span>
+                <span className="text-body-sm text-ink-light">/{total}</span>
+              </div>
+              <p className="font-mono text-[10px] text-ink-light uppercase tracking-wider mt-0.5">
+                {pct}%
+              </p>
+            </div>
           </div>
-          <div className="text-right shrink-0 ml-4">
-            <p className="font-display text-2xl">
-              {completados}
-              <span className="text-muted">/{total}</span>
-            </p>
-            <p className="font-mono text-[10px] text-muted">{pct}%</p>
+
+          {/* Barra de progreso */}
+          <div className="h-1 bg-line-soft rounded-full overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all duration-500 ease-out ${
+                completo ? "bg-accent" : "bg-accent/70"
+              }`}
+              style={{ width: `${pct}%` }}
+            />
           </div>
         </header>
 
-        <ul className="space-y-2">
+        {/* Lista de ejercicios */}
+        <ul className="px-2 pb-2">
           {dia.ejercicios.map((ej, idx) => {
             const hecho = !!registro[idx];
             return (
               <li key={idx}>
                 <div
-                  className={`w-full flex items-start gap-3 py-3 px-2 -mx-2 transition-colors hover:bg-cream/60 group ${
-                    hecho ? "opacity-50" : ""
+                  className={`group flex items-center gap-3 px-3 py-3 rounded-xl transition-colors ${
+                    hecho ? "" : "hover:bg-paper-soft active:bg-paper-soft"
                   }`}
                 >
-                  {/* Checkbox (clickable) */}
+                  {/* Checkbox grande */}
                   <button
                     onClick={() => onToggle(idx)}
-                    className={`shrink-0 w-5 h-5 mt-0.5 border flex items-center justify-center transition-colors ${
-                      hecho
-                        ? "bg-accent border-accent"
-                        : "border-muted group-hover:border-ink"
-                    }`}
+                    className="shrink-0 press-scale"
                     aria-label={hecho ? "Desmarcar" : "Marcar"}
                   >
-                    {hecho && (
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 12 12"
-                        fill="none"
-                        className="check-anim"
-                      >
-                        <path
-                          d="M2 6L5 9L10 3"
-                          stroke="#f5f1e8"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    )}
+                    <div
+                      className={`w-6 h-6 rounded-lg flex items-center justify-center transition-all duration-200 ${
+                        hecho
+                          ? "bg-accent border-accent"
+                          : "bg-paper border-2 border-line group-hover:border-ink-muted"
+                      }`}
+                      style={{
+                        borderWidth: hecho ? "0" : "1.5px",
+                      }}
+                    >
+                      {hecho && (
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 14 14"
+                          fill="none"
+                          className="check-anim"
+                        >
+                          <path
+                            d="M2.5 7L5.5 10L11.5 4"
+                            stroke="#f7f3ea"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      )}
+                    </div>
                   </button>
 
-                  {/* Texto (también clickable para marcar) */}
+                  {/* Texto */}
                   <button
                     onClick={() => onToggle(idx)}
-                    className="flex-1 min-w-0 text-left"
+                    className="flex-1 min-w-0 text-left press-scale"
                   >
                     <p
-                      className={`font-body text-base ${
-                        hecho ? "line-through decoration-1" : ""
+                      className={`text-body font-medium transition-colors ${
+                        hecho ? "text-ink-light" : "text-ink"
                       }`}
                     >
-                      {ej.nombre}
+                      <span className={hecho ? "strike-anim" : ""}>
+                        {ej.nombre}
+                      </span>
                     </p>
-                    <p className="font-mono text-xs text-muted mt-0.5">
+                    <p
+                      className={`font-mono text-[11px] mt-0.5 transition-colors ${
+                        hecho ? "text-ink-light/60" : "text-ink-muted"
+                      }`}
+                    >
                       {ej.detalle}
                     </p>
                   </button>
 
-                  {/* Botón de info */}
+                  {/* Botón info — secundario */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       setModal({ nombre: ej.nombre, detalle: ej.detalle });
                     }}
-                    className="shrink-0 w-7 h-7 border border-line hover:border-ink hover:bg-paper flex items-center justify-center transition-colors mt-0"
-                    aria-label="Ver cómo hacer este ejercicio"
+                    className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-ink-light hover:text-ink hover:bg-paper-warm transition-colors press-scale"
+                    aria-label="Ver instrucciones del ejercicio"
                   >
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                      <circle cx="6" cy="6" r="5" stroke="#6b6357" strokeWidth="1.2" />
-                      <path
-                        d="M6 5.5V8.5M6 3.5V3.6"
-                        stroke="#6b6357"
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <circle
+                        cx="7"
+                        cy="7"
+                        r="5.5"
+                        stroke="currentColor"
                         strokeWidth="1.2"
+                      />
+                      <path
+                        d="M7 6.5V10M7 4V4.1"
+                        stroke="currentColor"
+                        strokeWidth="1.4"
                         strokeLinecap="round"
                       />
                     </svg>
@@ -140,12 +187,15 @@ export default function DiaCard({
           })}
         </ul>
 
-        <div className="mt-5 h-[2px] bg-line relative overflow-hidden">
-          <div
-            className="absolute inset-y-0 left-0 bg-accent transition-all duration-500"
-            style={{ width: `${pct}%` }}
-          />
-        </div>
+        {/* Mensaje de día completado */}
+        {completo && (
+          <div className="px-5 py-3 border-t border-line-soft bg-accent/5">
+            <p className="font-mono text-label uppercase text-accent flex items-center gap-2">
+              <span className="w-1 h-1 rounded-full bg-accent" />
+              Día completado
+            </p>
+          </div>
+        )}
       </article>
 
       {modal && (
