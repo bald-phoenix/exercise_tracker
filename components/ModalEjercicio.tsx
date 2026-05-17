@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { DETALLES } from "@/lib/detalles";
 import { DIAGRAMAS } from "./Diagramas";
 
@@ -12,14 +13,17 @@ type Props = {
 
 export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
   const info = DETALLES[nombre];
+  const [montado, setMontado] = useState(false);
 
   useEffect(() => {
+    setMontado(true);
+
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
     document.addEventListener("keydown", handleEsc);
 
-    // Bloquear scroll preservando posición (técnica para iOS Safari)
+    // Bloquear scroll preservando posición (iOS Safari friendly)
     const scrollY = window.scrollY;
     document.body.style.position = "fixed";
     document.body.style.top = `-${scrollY}px`;
@@ -34,11 +38,13 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
     };
   }, [onClose]);
 
+  if (!montado) return null;
+
   const Diagrama = info?.diagrama ? DIAGRAMAS[info.diagrama] : null;
 
-  return (
+  const contenido = (
     <>
-      {/* Backdrop — full screen oscuro */}
+      {/* Backdrop */}
       <div
         onClick={onClose}
         style={{
@@ -52,7 +58,7 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
         }}
       />
 
-      {/* Modal — centrado con coordenadas explícitas */}
+      {/* Modal — centrado en viewport */}
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
@@ -151,4 +157,7 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
       </div>
     </>
   );
+
+  // Renderiza directamente en document.body — fuera del árbol de <main>
+  return createPortal(contenido, document.body);
 }
