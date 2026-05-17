@@ -13,7 +13,6 @@ type Props = {
 export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
   const info = DETALLES[nombre];
 
-  // Cerrar con ESC y bloquear scroll del body
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -30,24 +29,22 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end md:items-center justify-center"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
       onClick={onClose}
+      style={{
+        paddingTop: "max(1rem, env(safe-area-inset-top))",
+        paddingBottom: "max(1rem, env(safe-area-inset-bottom))",
+      }}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-ink/40" />
+      <div className="absolute inset-0 bg-ink/50" />
 
-      {/* Sheet */}
+      {/* Sheet — centrado, con scroll interno */}
       <div
-        className="relative bg-paper w-full md:max-w-lg md:mx-4 max-h-[90vh] overflow-y-auto border-t md:border border-ink shadow-2xl"
+        className="relative bg-paper w-full max-w-lg max-h-full overflow-y-auto border border-ink shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Handle (mobile) */}
-        <div className="md:hidden flex justify-center pt-3 pb-1">
-          <div className="w-10 h-1 bg-line rounded" />
-        </div>
-
-        <div className="px-6 py-5 md:py-6">
-          {/* Header */}
+        <div className="px-5 py-5 md:px-6 md:py-6">
           <header className="flex items-start justify-between mb-1 pb-4 border-b border-line">
             <div className="flex-1 min-w-0 pr-4">
               <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted mb-1">
@@ -60,15 +57,10 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
             </div>
             <button
               onClick={onClose}
-              className="shrink-0 w-8 h-8 flex items-center justify-center hover:bg-cream transition-colors"
+              className="shrink-0 w-9 h-9 flex items-center justify-center hover:bg-cream transition-colors border border-line"
               aria-label="Cerrar"
             >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 14 14"
-                fill="none"
-              >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 <path
                   d="M1 1L13 13M13 1L1 13"
                   stroke="#1a1814"
@@ -81,14 +73,12 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
 
           {info ? (
             <>
-              {/* Diagrama */}
               {Diagrama && (
-                <div className="mt-5 mb-5 p-4 bg-cream/50 border border-line">
+                <div className="mt-5 mb-5 p-3 bg-cream/50 border border-line">
                   <Diagrama />
                 </div>
               )}
 
-              {/* Descripción */}
               <section className="mt-5">
                 <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted mb-2">
                   Cómo se hace
@@ -96,17 +86,13 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
                 <p className="text-sm leading-relaxed">{info.descripcion}</p>
               </section>
 
-              {/* Requerimientos */}
               <section className="mt-5">
                 <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted mb-2">
                   Necesitas
                 </p>
                 <ul className="space-y-1">
                   {info.requerimientos.map((req, i) => (
-                    <li
-                      key={i}
-                      className="text-sm flex items-start gap-2"
-                    >
+                    <li key={i} className="text-sm flex items-start gap-2">
                       <span className="text-accent mt-1 shrink-0">▸</span>
                       <span>{req}</span>
                     </li>
@@ -114,7 +100,6 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
                 </ul>
               </section>
 
-              {/* Tips */}
               <section className="mt-5">
                 <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted mb-2">
                   Tips
