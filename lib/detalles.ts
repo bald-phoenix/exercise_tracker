@@ -1,11 +1,8 @@
-// Detalles de cada ejercicio: descripción, requerimientos, tips y key del diagrama.
-// La key apunta a un componente SVG en components/Diagramas.tsx
-
 export type DetalleEjercicio = {
   descripcion: string;
   requerimientos: string[];
   tips: string[];
-  diagrama: string; // key del componente SVG
+  videoUrl?: string;
 };
 
 export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
@@ -17,7 +14,7 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "No bajes más allá de la línea del pecho — protege el hombro.",
       "Mantén las muñecas firmes y alineadas con los codos.",
     ],
-    diagrama: "pressPecho",
+    videoUrl: "https://musclewiki.com/exercise/dumbbell-bench-press",
   },
   "Press militar de pie": {
     descripcion:
@@ -27,7 +24,7 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "Aprieta el abdomen y glúteos para no arquear la espalda baja.",
       "No bloquees los codos al final del movimiento.",
     ],
-    diagrama: "pressMilitar",
+    videoUrl: "https://musclewiki.com/exercise/dumbbell-standing-overhead-press",
   },
   "Aperturas en banco": {
     descripcion:
@@ -37,7 +34,7 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "Mantén un ligero doblez en los codos durante todo el movimiento.",
       "Baja controlado — la fase excéntrica es donde está el trabajo.",
     ],
-    diagrama: "aperturas",
+    videoUrl: "https://musclewiki.com/exercise/dumbbell-fly",
   },
   "Patada de tríceps": {
     descripcion:
@@ -47,7 +44,7 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "El codo NO se mueve — solo el antebrazo.",
       "Aprieta el tríceps arriba 1 segundo antes de bajar.",
     ],
-    diagrama: "patadaTriceps",
+    videoUrl: "https://musclewiki.com/exercise/dumbbell-tricep-kickback",
   },
   "Plancha": {
     descripcion:
@@ -57,7 +54,7 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "Aprieta abdomen y glúteos todo el tiempo.",
       "Si te falla la espalda baja, baja a rodillas en vez de soltar la forma.",
     ],
-    diagrama: "plancha",
+    videoUrl: "https://musclewiki.com/exercise/plank",
   },
   "Remo a una mano en banco": {
     descripcion:
@@ -67,7 +64,7 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "Jala con el codo, no con la mano — piensa en pegar el codo al techo.",
       "Espalda neutra, no la redondees.",
     ],
-    diagrama: "remoUnaMano",
+    videoUrl: "https://musclewiki.com/exercise/single-arm-dumbbell-row",
   },
   "Remo inclinado a dos manos": {
     descripcion:
@@ -77,7 +74,7 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "Rodillas suavemente flexionadas, cadera atrás.",
       "Aprieta los omóplatos al final del movimiento.",
     ],
-    diagrama: "remoInclinado",
+    videoUrl: "https://musclewiki.com/exercise/dumbbell-bent-over-row",
   },
   "Curl de bíceps": {
     descripcion:
@@ -87,7 +84,7 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "Codos fijos al costado — no los muevas hacia adelante.",
       "Baja en 2-3 segundos, no dejes caer el peso.",
     ],
-    diagrama: "curlBiceps",
+    videoUrl: "https://musclewiki.com/exercise/dumbbell-bicep-curl",
   },
   "Curl martillo": {
     descripcion:
@@ -97,7 +94,7 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "Mantén las muñecas rectas, sin rotar.",
       "Trabaja braquial y antebrazos además del bíceps.",
     ],
-    diagrama: "curlMartillo",
+    videoUrl: "https://musclewiki.com/exercise/dumbbell-hammer-curl",
   },
   "Superman en tapete": {
     descripcion:
@@ -107,7 +104,7 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "Mira al piso para no hiperextender el cuello.",
       "Aprieta los glúteos arriba — el trabajo es lumbar y glúteo, no fuerza bruta.",
     ],
-    diagrama: "superman",
+    videoUrl: "https://musclewiki.com/exercise/superman",
   },
   "Sentadilla goblet": {
     descripcion:
@@ -117,7 +114,7 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "Rodillas alineadas con las puntas de los pies, no hacia adentro.",
       "Pecho arriba, espalda neutra. No mires al techo.",
     ],
-    diagrama: "sentadillaGoblet",
+    videoUrl: "https://musclewiki.com/exercise/dumbbell-goblet-squat",
   },
   "Zancadas alternadas": {
     descripcion:
@@ -127,7 +124,7 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "La rodilla delantera no debe pasar la punta del pie.",
       "Torso erguido, no te inclines al frente.",
     ],
-    diagrama: "zancadas",
+    videoUrl: "https://musclewiki.com/exercise/dumbbell-lunge",
   },
   "Peso muerto rumano": {
     descripcion:
@@ -137,7 +134,7 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "El movimiento viene de la cadera, no de la espalda.",
       "Las mancuernas casi rozan tus piernas todo el camino.",
     ],
-    diagrama: "pesoMuerto",
+    videoUrl: "https://musclewiki.com/exercise/dumbbell-romanian-deadlift",
   },
   "Puente de glúteo": {
     descripcion:
@@ -147,7 +144,7 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "Aprieta los glúteos arriba 1 segundo.",
       "Si lo sientes en la espalda baja, no estás usando glúteos. Concéntrate.",
     ],
-    diagrama: "puenteGluteo",
+    videoUrl: "https://musclewiki.com/exercise/glute-bridge",
   },
   "Plancha lateral": {
     descripcion:
@@ -157,7 +154,7 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "Cadera arriba — no la dejes caer.",
       "Si es muy difícil, apoya la rodilla inferior en lugar del pie.",
     ],
-    diagrama: "planchaLateral",
+    videoUrl: "https://musclewiki.com/exercise/side-plank",
   },
   "Press Arnold sentado": {
     descripcion:
@@ -167,7 +164,7 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "El giro de muñecas es la clave — eso lo distingue del press militar.",
       "Mantén el core firme contra el respaldo.",
     ],
-    diagrama: "pressArnold",
+    videoUrl: "https://musclewiki.com/exercise/dumbbell-arnold-press",
   },
   "Elevaciones laterales": {
     descripcion:
@@ -177,7 +174,7 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "No subas más de la línea de los hombros.",
       "Codos ligeramente flexionados, no rígidos.",
     ],
-    diagrama: "elevacionesLaterales",
+    videoUrl: "https://musclewiki.com/exercise/dumbbell-lateral-raise",
   },
   "Press inclinado en banco": {
     descripcion:
@@ -187,7 +184,7 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "Más inclinación = más hombro, menos pecho. Mantente ≤45°.",
       "Pies firmes en el piso para estabilizar.",
     ],
-    diagrama: "pressInclinado",
+    videoUrl: "https://musclewiki.com/exercise/dumbbell-incline-bench-press",
   },
   "Fondos de tríceps en banco": {
     descripcion:
@@ -197,7 +194,7 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "Codos hacia atrás, no abiertos a los lados.",
       "Para hacerlo más fácil, mantén las rodillas flexionadas (pies más cerca del banco).",
     ],
-    diagrama: "fondosTriceps",
+    videoUrl: "https://musclewiki.com/exercise/bench-dip",
   },
   "Crunch en tapete": {
     descripcion:
@@ -207,7 +204,7 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "No jales del cuello — las manos solo sostienen, no jalan.",
       "Sube solo los hombros, no toda la espalda.",
     ],
-    diagrama: "crunch",
+    videoUrl: "https://musclewiki.com/exercise/crunches",
   },
   "Remo renegado (plancha + remo)": {
     descripcion:
@@ -217,7 +214,7 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "No rotes la cadera — mantenla cuadrada al piso.",
       "Si es muy difícil, hazlo con rodillas apoyadas.",
     ],
-    diagrama: "remoRenegado",
+    videoUrl: "https://musclewiki.com/exercise/renegade-row",
   },
   "Pullover en banco": {
     descripcion:
@@ -227,7 +224,7 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "Brazos ligeramente flexionados, fijos así todo el movimiento.",
       "Baja hasta sentir estiramiento, no más.",
     ],
-    diagrama: "pullover",
+    videoUrl: "https://musclewiki.com/exercise/dumbbell-pullover",
   },
   "Curl concentrado": {
     descripcion:
@@ -237,7 +234,7 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "El codo NO se separa del muslo en ningún momento.",
       "Aprieta el bíceps arriba antes de bajar.",
     ],
-    diagrama: "curlConcentrado",
+    videoUrl: "https://musclewiki.com/exercise/dumbbell-concentration-curl",
   },
   "Apertura inversa (face pull)": {
     descripcion:
@@ -247,7 +244,7 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "Aprieta los omóplatos al final.",
       "Movimiento controlado — este ejercicio es de técnica, no de peso.",
     ],
-    diagrama: "aperturaInversa",
+    videoUrl: "https://musclewiki.com/exercise/dumbbell-rear-delt-fly",
   },
   "Russian twist": {
     descripcion:
@@ -257,6 +254,6 @@ export const DETALLES: { [nombre: string]: DetalleEjercicio } = {
       "El movimiento viene del torso, no de los brazos.",
       "Para más reto, levanta los pies del piso.",
     ],
-    diagrama: "russianTwist",
+    videoUrl: "https://musclewiki.com/exercise/russian-twist",
   },
 };

@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { DETALLES } from "@/lib/detalles";
-import { DIAGRAMAS } from "./Diagramas";
 
 type Props = {
   nombre: string;
@@ -14,6 +13,8 @@ type Props = {
 export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
   const info = DETALLES[nombre];
   const [montado, setMontado] = useState(false);
+  const [verVideo, setVerVideo] = useState(false);
+  const [iframeFallo, setIframeFallo] = useState(false);
 
   useEffect(() => {
     setMontado(true);
@@ -37,13 +38,15 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
     };
   }, [onClose]);
 
-  if (!montado) return null;
+  useEffect(() => {
+    setVerVideo(false);
+    setIframeFallo(false);
+  }, [nombre]);
 
-  const Diagrama = info?.diagrama ? DIAGRAMAS[info.diagrama] : null;
+  if (!montado) return null;
 
   const contenido = (
     <>
-      {/* Backdrop con blur */}
       <div
         onClick={onClose}
         style={{
@@ -60,7 +63,6 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
         }}
       />
 
-      {/* Modal */}
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
@@ -75,12 +77,12 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
           zIndex: 9999,
           backgroundColor: "#f7f3ea",
           borderRadius: "20px",
-          boxShadow: "0 20px 50px -12px rgba(22, 19, 16, 0.25), 0 0 0 0.5px rgba(22, 19, 16, 0.08)",
+          boxShadow:
+            "0 20px 50px -12px rgba(22, 19, 16, 0.25), 0 0 0 0.5px rgba(22, 19, 16, 0.08)",
           animation: "scaleIn 220ms cubic-bezier(0.16, 1, 0.3, 1)",
         }}
       >
         <div className="px-5 py-5 md:px-6 md:py-6">
-          {/* Header */}
           <header className="flex items-start justify-between gap-3 mb-5 pb-4 border-b border-line-soft">
             <div className="flex-1 min-w-0">
               <p className="font-mono text-label uppercase text-ink-light mb-1.5">
@@ -109,14 +111,127 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
 
           {info ? (
             <>
-              {/* Diagrama */}
-              {Diagrama && (
-                <div className="mb-5 p-4 bg-paper-soft border border-line-soft rounded-xl">
-                  <Diagrama />
+              {info.videoUrl && (
+                <div className="mb-5">
+                  {!verVideo ? (
+                    <button
+                      onClick={() => setVerVideo(true)}
+                      className="w-full p-4 bg-ink hover:bg-ink-soft text-paper rounded-xl flex items-center justify-between gap-3 transition-colors press-scale"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-9 h-9 rounded-full bg-accent flex items-center justify-center shrink-0">
+                          <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 12 12"
+                            fill="none"
+                          >
+                            <path d="M3 2L10 6L3 10V2Z" fill="#f7f3ea" />
+                          </svg>
+                        </div>
+                        <div className="text-left min-w-0">
+                          <p className="font-medium text-body">
+                            Ver demostración
+                          </p>
+                          <p className="font-mono text-[10px] text-paper/60 uppercase tracking-wider mt-0.5">
+                            video del movimiento
+                          </p>
+                        </div>
+                      </div>
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                        fill="none"
+                        className="shrink-0 text-paper/60"
+                      >
+                        <path
+                          d="M4 3L9 7L4 11"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </button>
+                  ) : iframeFallo ? (
+                    <div className="p-4 bg-paper-soft border border-line-soft rounded-xl">
+                      <p className="text-body-sm text-ink-muted mb-3">
+                        La demostración no se puede mostrar directamente aquí.
+                      </p>
+                      <a
+                        href={info.videoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-ink text-paper text-body-sm font-medium rounded-lg hover:bg-ink-soft transition-colors"
+                      >
+                        Abrir demostración
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 12 12"
+                          fill="none"
+                        >
+                          <path
+                            d="M3 9L9 3M9 3H4M9 3V8"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                      </a>
+                    </div>
+                  ) : (
+                    <div className="relative">
+                      <div className="aspect-video bg-paper-soft border border-line-soft rounded-xl overflow-hidden">
+                        <iframe
+                          src={info.videoUrl}
+                          className="w-full h-full"
+                          onLoad={(e) => {
+                            try {
+                              const iframe = e.target as HTMLIFrameElement;
+                              setTimeout(() => {
+                                try {
+                                  const doc = iframe.contentDocument;
+                                  if (!doc || doc.body.innerHTML === "") {
+                                    setIframeFallo(true);
+                                  }
+                                } catch {
+                                  // Cross-origin = cargó algo, no falló
+                                }
+                              }, 1500);
+                            } catch {
+                              setIframeFallo(true);
+                            }
+                          }}
+                          onError={() => setIframeFallo(true)}
+                          title={`Demostración: ${nombre}`}
+                        />
+                      </div>
+                      <button
+                        onClick={() => setVerVideo(false)}
+                        className="mt-2 text-body-sm text-ink-muted hover:text-ink press-scale flex items-center gap-1"
+                      >
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 12 12"
+                          fill="none"
+                        >
+                          <path
+                            d="M9 3L3 9M3 3L9 9"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                        Ocultar video
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
 
-              {/* Cómo se hace */}
               <section className="mb-5">
                 <p className="font-mono text-label uppercase text-ink-light mb-2">
                   Cómo se hace
@@ -126,7 +241,6 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
                 </p>
               </section>
 
-              {/* Necesitas */}
               <section className="mb-5">
                 <p className="font-mono text-label uppercase text-ink-light mb-2.5">
                   Necesitas
@@ -144,7 +258,6 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
                 </ul>
               </section>
 
-              {/* Tips */}
               <section>
                 <p className="font-mono text-label uppercase text-ink-light mb-2.5">
                   Tips
