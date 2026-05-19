@@ -14,7 +14,8 @@ type Props = {
 export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
   const info = DETALLES[nombre];
   const [montado, setMontado] = useState(false);
-  const [verGif, setVerGif] = useState(false);
+  const [verVideo, setVerVideo] = useState(false);
+  const [iframeFallo, setIframeFallo] = useState(false);
 
   useEffect(() => {
     setMontado(true);
@@ -39,7 +40,8 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
   }, [onClose]);
 
   useEffect(() => {
-    setVerGif(false);
+    setVerVideo(false);
+    setIframeFallo(false);
   }, [nombre]);
 
   if (!montado) return null;
@@ -110,12 +112,11 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
 
           {info ? (
             <>
-              {/* GIF embed o CTA */}
-              {info.gifUrl && (
+              {info.videoUrl && (
                 <div className="mb-5">
-                  {!verGif ? (
+                  {!verVideo ? (
                     <button
-                      onClick={() => setVerGif(true)}
+                      onClick={() => setVerVideo(true)}
                       className="w-full p-4 bg-ink hover:bg-ink-soft text-paper rounded-xl flex items-center justify-between gap-3 transition-colors press-scale"
                     >
                       <div className="flex items-center gap-3 min-w-0">
@@ -154,18 +155,62 @@ export default function ModalEjercicio({ nombre, detalle, onClose }: Props) {
                         />
                       </svg>
                     </button>
+                  ) : iframeFallo ? (
+                    <div className="p-4 bg-paper-soft border border-line-soft rounded-xl">
+                      <p className="text-body-sm text-ink-muted mb-3">
+                        El video no se puede embeber. Ábrelo en una pestaña nueva:
+                      </p>
+                      <a
+                        href={info.videoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-ink text-paper text-body-sm font-medium rounded-lg hover:bg-ink-soft transition-colors"
+                      >
+                        Abrir demostración
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 12 12"
+                          fill="none"
+                        >
+                          <path
+                            d="M3 9L9 3M9 3H4M9 3V8"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                      </a>
+                    </div>
                   ) : (
                     <div className="relative">
-                      <div className="bg-paper-soft border border-line-soft rounded-xl overflow-hidden flex items-center justify-center">
-                        <img
-                          src={info.gifUrl}
-                          alt={`Demostración: ${nombre}`}
-                          className="max-w-full h-auto"
-                          style={{ maxHeight: "320px" }}
+                      <div className="aspect-video bg-paper-soft border border-line-soft rounded-xl overflow-hidden">
+                        <iframe
+                          src={info.videoUrl}
+                          className="w-full h-full"
+                          onLoad={(e) => {
+                            try {
+                              const iframe = e.target as HTMLIFrameElement;
+                              setTimeout(() => {
+                                try {
+                                  const doc = iframe.contentDocument;
+                                  if (!doc || doc.body.innerHTML === "") {
+                                    setIframeFallo(true);
+                                  }
+                                } catch {
+                                  // Cross-origin = cargó algo, no falló
+                                }
+                              }, 1500);
+                            } catch {
+                              setIframeFallo(true);
+                            }
+                          }}
+                          onError={() => setIframeFallo(true)}
+                          title={`Demostración: ${nombre}`}
                         />
                       </div>
                       <button
-                        onClick={() => setVerGif(false)}
+                        onClick={() => setVerVideo(false)}
                         className="mt-2 text-body-sm text-ink-muted hover:text-ink press-scale flex items-center gap-1"
                       >
                         <svg
